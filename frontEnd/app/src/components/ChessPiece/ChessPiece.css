@@ -1,0 +1,15 @@
+.chessPieces{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    flex-wrap: wrap;
+    width: 400px;
+    height: 400px;
+}
+
+span{
+    color:red;
+    height: 50px;
+    width: 50px;
+}
