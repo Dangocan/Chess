@@ -19,7 +19,7 @@ function ChessPiece(props) {
     >
       {props.gameState.map((game, indice) => {
         return (
-          <span
+          <span className = 'chessPieces__text'
             draggable={true}
             onDragStart={(event) => {
               event.dataTransfer.setData("text", event.target.id);
