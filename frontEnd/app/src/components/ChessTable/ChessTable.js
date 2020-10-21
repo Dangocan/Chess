@@ -1,7 +1,7 @@
 import React from "react";
 import './ChessTable.css';
 
-function ChessTable(props) {
+function ChessTable() {
   const tableRender = () => {
     const letras = ["a", "b", "c", "d", "e", "f", "g", "h"];
     const tableCells = [];

@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./ChessPiece.css";
+import io from 'socket.io-client';
 
-function ChessPiece(props) {
+const socket = io("http://localhost:8080");
+socket.on("connect", () => {
+  console.log("A new connection has been established");
+});
+
+function ChessPiece() {
+  const [game, setGame] = useState(['T','C','B','D','R','B','C','T','P','P','P','P','P','P','P','P','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','P','P','P','P','P','P','P','P','T','C','B','D','R','B','C','T']);
+
+  useEffect(() => {
+    const handleNewGame = (newGame) => {
+      setGame([...newGame]);
+    };
+    socket.on('gameChange', handleNewGame);
+    return () => socket.off('gameChange', handleNewGame)
+  }, [game]);
+  
   return (
     <div
       onDragOver={(event) => {
@@ -13,11 +29,17 @@ function ChessPiece(props) {
         if(event.target.textContent !== document.getElementById(data).textContent){
           event.target.textContent = document.getElementById(data).textContent;
           document.getElementById(data).textContent = '0';
+          const gameArray = [];
+          let chessPieces = document.querySelectorAll(".chessPieces__text");
+          for (let i = 0; i <= chessPieces.length - 1; i++) {
+            gameArray.push(chessPieces[i].textContent);
+          }
+          socket.emit("gameChange", gameArray);
         }
       }}
       className="chessPieces"
     >
-      {props.gameState.map((game, indice) => {
+      {game.map((piece, indice) => {
         return (
           <span className = 'chessPieces__text'
             draggable={true}
@@ -27,7 +49,7 @@ function ChessPiece(props) {
             id={`piece${indice}`}
             key={indice}
           >
-            {game}
+            {piece}
           </span>
         );
       })}
