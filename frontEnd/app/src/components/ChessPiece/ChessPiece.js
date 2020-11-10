@@ -1,23 +1,37 @@
 import React, { useEffect, useState } from "react";
 import "./ChessPiece.css";
-import io from 'socket.io-client';
+import io from "socket.io-client";
 
 const socket = io("http://localhost:8080");
+let gameConectedState = [];
 socket.on("connect", () => {
   console.log("A new connection has been established");
 });
+socket.on("gameOpen", (gameConected) => {
+  gameConectedState = gameConected;
+});
 
 function ChessPiece() {
-  const [game, setGame] = useState(['T','C','B','D','R','B','C','T','P','P','P','P','P','P','P','P','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','P','P','P','P','P','P','P','P','T','C','B','D','R','B','C','T']);
+  const [game, setGame] = useState([]);
+  
+  const letras = ["a", "b", "c", "d", "e", "f", "g", "h"];
+  const tableCells = [];
+
+  for (let i = 0; i <= 7; i++) {
+    for (let l = 0; l <= 7; l++) {
+      const tableCell = `${letras[l]}${8 - i}`;
+      tableCells.push(tableCell);
+    }
+  }
 
   useEffect(() => {
     const handleNewGame = (newGame) => {
       setGame([...newGame]);
     };
-    socket.on('gameChange', handleNewGame);
-    return () => socket.off('gameChange', handleNewGame)
+    socket.on("gameRender", handleNewGame);
+    return () => socket.off("gameRender", handleNewGame);
   }, [game]);
-  
+
   return (
     <div
       onDragOver={(event) => {
@@ -26,27 +40,30 @@ function ChessPiece() {
       onDrop={(event) => {
         event.preventDefault();
         let data = event.dataTransfer.getData("text");
-        if(event.target.textContent !== document.getElementById(data).textContent){
+        if (
+          event.target.textContent !== document.getElementById(data).textContent
+        ) {
+          const move = {
+            from: document.getElementById(data).id,
+            to: event.target.id,
+          };
           event.target.textContent = document.getElementById(data).textContent;
-          document.getElementById(data).textContent = '0';
-          const gameArray = [];
-          let chessPieces = document.querySelectorAll(".chessPieces__text");
-          for (let i = 0; i <= chessPieces.length - 1; i++) {
-            gameArray.push(chessPieces[i].textContent);
-          }
-          socket.emit("gameChange", gameArray);
+          document.getElementById(data).textContent = "0";
+      
+          socket.emit("gameMove", move);
         }
       }}
       className="chessPieces"
     >
       {game.map((piece, indice) => {
         return (
-          <span className = 'chessPieces__text'
+          <span
+            className={`chessPieces__text ${piece}`}
             draggable={true}
             onDragStart={(event) => {
               event.dataTransfer.setData("text", event.target.id);
             }}
-            id={`piece${indice}`}
+            id={tableCells[indice]}
             key={indice}
           >
             {piece}
