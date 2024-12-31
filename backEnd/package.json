@@ -12,9 +12,9 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "chess.js": "^0.11.0",
-    "express": "^4.17.1",
-    "nodemon": "^2.0.6",
-    "socket.io": "^2.3.0"
+    "chess.js": "^1.0.0-beta.8",
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9",
+    "socket.io": "^4.8.1"
   }
 }
